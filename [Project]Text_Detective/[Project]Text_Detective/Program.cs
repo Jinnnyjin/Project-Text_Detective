@@ -6,7 +6,7 @@ namespace _Project_Text_Detective
     internal class Program
     {
         // 장소마다 선택지가 다름. 각각 가능한 보기를 dictionary로 구현
-        static Dictionary<Location, Behavior[]> _locations = new Dictionary<Location, Behavior[]>
+        static Dictionary<Location, Behavior[]> locaToBehave = new Dictionary<Location, Behavior[]>
         {
             { Location.Home, new Behavior[]{ Behavior.Move, Behavior.Search, Behavior.Exercise, Behavior.Study } },
             { Location.Cafe, new Behavior[]{ Behavior.Move, Behavior.Search} },
@@ -14,12 +14,22 @@ namespace _Project_Text_Detective
             { Location.Gym, new Behavior[]{ Behavior.Move, Behavior.Search, Behavior.Exercise } }
 
         };
+
+        static Dictionary<Location, Location[]> locaToLoca = new Dictionary<Location, Location[]>
+        {
+            { Location.Home, new Location[]{ Location.Cafe, Location.Library, Location.Gym } },
+            { Location.Cafe, new Location[]{ Location.Home, Location.Library, Location.Gym } },
+            { Location.Library, new Location[]{ Location.Home, Location.Cafe, Location.Gym } },
+            { Location.Gym, new Location[]{ Location.Home, Location.Cafe, Location.Library } }
+        };
+
         enum Behavior
         {
             Move, Search, Exercise, Study
         }
 
         static string[] BehaveKor = { "이동", "조사", "운동", "공부" };
+        static string[] LocationKor = { "집", "카페", "도서관", "헬스장" };
         static int turnCount = 0;
 
         static void Main(string[] args)
@@ -33,7 +43,7 @@ namespace _Project_Text_Detective
             {
                 
                 SceneMain(player);
-                Behavior[] behaviors = _locations[player.Location];
+                Behavior[] behaviors = locaToBehave[player.Location];
                 int choice = GetIntInput(0, behaviors.Length);
                 if(choice == 0)
                 {
@@ -62,37 +72,41 @@ namespace _Project_Text_Detective
         // 함수 - 이동
         public static void Move(Player player)
         {
-            // 추후 현위치도 띄우고 현위치는 이동에 안뜨도록 수정필요
+            Location[] movableLoca = locaToLoca[player.Location];
+
             Console.WriteLine("어디로 이동하겠습니까?");
             Console.WriteLine("[0] 취소");
-            Console.WriteLine("[1] 카페");
-            Console.WriteLine("[2] 도서관");
-            Console.WriteLine("[3] 헬스장");
-            Console.WriteLine("[4] 집");
 
-            switch (GetIntInput(0,4))
+            for (int i = 0; i < movableLoca.Length ; i++)
             {
-                case 0:
-                    break;
-                case 1:
+                Console.WriteLine($"[{i+1}] {LocationKor[(int)movableLoca[i]]}");
+            }
+
+            // 0 따로 취소처리
+            int choice = GetIntInput(0, movableLoca.Length);
+                if (choice == 0) return;
+
+            switch (movableLoca[choice -1])
+            {
+                case Location.Cafe:
                     Console.WriteLine("카페로 이동합니다.");
                     player.Location = Location.Cafe;
                     turnCount++;
                     player.Hp--;
                     break;
-                case 2:
+                case Location.Library:
                     Console.WriteLine("도서관으로 이동합니다.");
                     player.Location = Location.Library;
                     turnCount++;
                     player.Hp--;
                     break;
-                case 3:
+                case Location.Gym:
                     Console.WriteLine("헬스장으로 이동합니다.");
                     player.Location = Location.Gym;
                     turnCount++;
                     player.Hp--;
                     break;
-                case 4:
+                case Location.Home:
                     Console.WriteLine("집으로 이동합니다.");
                     player.Location = Location.Home;
                     turnCount++;
@@ -151,7 +165,7 @@ namespace _Project_Text_Detective
         // 보기(집)
         public static void SceneMain(Player player)
         {
-            Behavior[] behaviors = _locations[player.Location];
+            Behavior[] behaviors = locaToBehave[player.Location];
             for (int i = 0; i < behaviors.Length; i++)
             {
                 Console.WriteLine($"[{i+1}] {BehaveKor[(int)behaviors[i]]}");

@@ -7,8 +7,6 @@ namespace _Project_Text_Detective
         Home, Cafe, Library, Gym
     }
 
-
-
     public class Player : Character
     {
         public int Hp { get; set; }
