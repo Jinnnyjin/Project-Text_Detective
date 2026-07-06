@@ -5,6 +5,15 @@ namespace _Project_Text_Detective
     
     internal class Program
     {
+        // 장소마다 선택지가 다름. 각각 가능한 보기를 dictionary로 구현
+        static Dictionary<Location, Behavior[]> _locations = new Dictionary<Location, Behavior[]>
+        {
+            { Location.Home, new Behavior[]{ Behavior.Move, Behavior.Search, Behavior.Exercise, Behavior.Study } },
+            { Location.Cafe, new Behavior[]{ Behavior.Move, Behavior.Search} },
+            { Location.Library, new Behavior[]{ Behavior.Move, Behavior.Search,Behavior.Study } },
+            { Location.Gym, new Behavior[]{ Behavior.Move, Behavior.Search, Behavior.Exercise } }
+
+        };
         enum Behavior
         {
             Move, Search, Exercise, Study
@@ -23,22 +32,27 @@ namespace _Project_Text_Detective
             while (isRunning)
             {
                 
-                SceneMain();
-                switch (GetIntInput(0, BehaveKor.Length))
+                SceneMain(player);
+                Behavior[] behaviors = _locations[player.Location];
+                int choice = GetIntInput(0, behaviors.Length);
+                if(choice == 0)
                 {
-                    case 0: //종료
-                        isRunning = false;
-                        Console.WriteLine("게임을 종료합니다.");
-                        break;
-                    case 1: // 이동
+                    isRunning = false;
+                    Console.WriteLine("게임을 종료합니다.");
+                    continue;
+                }    
+                
+                switch (behaviors[choice - 1])
+                {
+                    case Behavior.Move:
                         Move(player);
                         break;
-                    case 2: //조사                       
+                    case Behavior.Search:                       
                         break;
-                    case 3: //운동
+                    case Behavior.Exercise:
                         Exercise(player);
                         break;
-                    case 4: //공부
+                    case Behavior.Study:
                         Study(player);
                         break;
                 }
@@ -62,16 +76,25 @@ namespace _Project_Text_Detective
                     break;
                 case 1:
                     Console.WriteLine("카페로 이동합니다.");
+                    player.Location = Location.Cafe;
                     turnCount++;
                     player.Hp--;
                     break;
                 case 2:
                     Console.WriteLine("도서관으로 이동합니다.");
+                    player.Location = Location.Library;
                     turnCount++;
                     player.Hp--;
                     break;
                 case 3:
                     Console.WriteLine("헬스장으로 이동합니다.");
+                    player.Location = Location.Gym;
+                    turnCount++;
+                    player.Hp--;
+                    break;
+                case 4:
+                    Console.WriteLine("집으로 이동합니다.");
+                    player.Location = Location.Home;
                     turnCount++;
                     player.Hp--;
                     break;
@@ -126,16 +149,15 @@ namespace _Project_Text_Detective
         }
         //===================================
         // 보기(집)
-        public static void SceneMain()
+        public static void SceneMain(Player player)
         {
-            // 추후 집/집이외의 장소마다 선택지 다르게 부여
-            for (int i = 0; i < 4; i++)
+            Behavior[] behaviors = _locations[player.Location];
+            for (int i = 0; i < behaviors.Length; i++)
             {
-                Console.WriteLine($" [{i+1}] {BehaveKor[i]}");
+                Console.WriteLine($"[{i+1}] {BehaveKor[(int)behaviors[i]]}");
             }
-            Console.WriteLine("[0] 게임 종료");
-        }
 
+        }
         //===================================
         // 함수 - 정수 입력받기
 

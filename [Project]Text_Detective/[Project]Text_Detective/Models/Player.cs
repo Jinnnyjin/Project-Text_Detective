@@ -2,19 +2,31 @@
 
 namespace _Project_Text_Detective
 {
+    public enum Location
+    {
+        Home, Cafe, Library, Gym
+    }
+
+
+
     public class Player : Character
     {
         public int Hp { get; set; }
-
         public float MaxHp { get; set; }
-        public int JudegeAbility { get; set; }
-        public int ObserveAbility { get; set; }
-        public int DeductAbility { get; set; }
+        public Location Location { get; set; }
+        
+        public int JudegeAbility { get; set; } // 판단력
+        public int ObserveAbility { get; set; } // 관찰력
+        public int DeductAbility { get; set; } // 추리력
+
+
 
         public Player(string name) : base(name, CharacterType.Player)
         {
             MaxHp = 15;
             Hp = (int)MaxHp;
+            this.Location = Location.Home;
+
             JudegeAbility = 10;
             ObserveAbility = 10;
             DeductAbility = 10;
