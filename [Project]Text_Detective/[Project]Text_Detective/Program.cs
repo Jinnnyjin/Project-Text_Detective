@@ -1,10 +1,10 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using System.ComponentModel.Design;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Channels;
 
 
 /*
 TODO :
-관찰력 → Investigate 확률 조정 (오늘 하려던 것)
 판단력 → 핵심 증거 표시
 수첩 전체 열람 기능 (새로 발견한 것) ← 이거 어디 넣을지
 80% 체크 → 법정 배틀
@@ -235,7 +235,10 @@ namespace _Project_Text_Detective
             Console.WriteLine("====추리 수첩====");
             for(int i = 0; i < Math.Min(player.Clues.Count, (int)player.DeductAbility); i++)
             {
-                Console.WriteLine($"증거[{i+1}] {player.Clues[i].Name}");
+                if(player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
+                    Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}          ★중요");
+                else Console.WriteLine($"증거[{i+1}] {player.Clues[i].Name}");
+
                 Console.WriteLine($" - {player.Clues[i].Description}");
             }
         }

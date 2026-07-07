@@ -26,7 +26,7 @@ namespace _Project_Text_Detective
             this.Location = Location.Home;
 
             JudegeAbility = 10;
-            ObserveAbility = 10;
+            ObserveAbility = 1;
             DeductAbility = 1;
             Clues = new List<Clue>();
         }
