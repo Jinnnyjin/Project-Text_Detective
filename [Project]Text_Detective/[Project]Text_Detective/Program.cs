@@ -1,6 +1,14 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 using System.Threading.Channels;
 
+
+/*
+TODO :
+관찰력 → Investigate 확률 조정 (오늘 하려던 것)
+판단력 → 핵심 증거 표시
+수첩 전체 열람 기능 (새로 발견한 것) ← 이거 어디 넣을지
+80% 체크 → 법정 배틀
+ */
 namespace _Project_Text_Detective
 {
     public enum Behavior
@@ -117,14 +125,40 @@ namespace _Project_Text_Detective
 
             int origin = player.Clues.Count;
 
+            List<Clue> critical = new List<Clue>();
+            List<Clue> minor = new List<Clue>();
+
+            for (int i = 0; i < ClueData.clues.Count; i++)
+            {
+                if (ClueData.clues[i].Importance == ClueImportance.Critical)
+                {
+                    critical.Add(ClueData.clues[i]);
+                }
+                else
+                {
+                    minor.Add(ClueData.clues[i]);
+                }
+            }
+            int clueNum = 0;
             while (player.Clues.Count == origin)
             {
-                int clueNum = random.Next(0, 10);
-                
-                if (player.Clues.Contains(ClueData.clues[clueNum])) continue;
-                
-                player.Clues.Add(ClueData.clues[clueNum]);
-                Console.WriteLine($"{ClueData.clues[clueNum].Name}을 획득했습니다.");
+                int criticalPercentage = random.Next(0, 100);
+                if (criticalPercentage <= 20 + Math.Min(20,player.ObserveAbility))
+                {
+                    clueNum = random.Next(0, critical.Count);
+                    if (player.Clues.Contains(critical[clueNum])) continue;
+
+                    player.Clues.Add(critical[clueNum]);
+                    Console.WriteLine($"{critical[clueNum].Name}을 획득했습니다.");
+                }
+                else
+                {
+                    clueNum = random.Next(0, minor.Count);
+                    if (player.Clues.Contains(minor[clueNum])) continue;
+
+                    player.Clues.Add(minor[clueNum]);
+                    Console.WriteLine($"{minor[clueNum].Name}을 획득했습니다.");
+                }
             }
 
                 player.Hp--;
@@ -158,8 +192,7 @@ namespace _Project_Text_Detective
             player.Hp--;
             turnCount++;
             Random random = new Random();
-            int subject = random.Next(1,4);
-
+            int subject = random.Next(0,4);
             switch(subject)
             {
                 case 1:
