@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using System.Threading.Channels;
 
 namespace _Project_Text_Detective
 {
@@ -23,7 +24,9 @@ namespace _Project_Text_Detective
             bool isRunning = true;
             while (isRunning)
             {
-                
+                Console.Clear();
+                DisplayStatus(player);
+                ShowDiary(player);
                 SceneMain(player);
                 Behavior[] behaviors = GameRules.locaToBehave[player.Location];
                 int choice = GetIntInput(0, behaviors.Length);
@@ -49,6 +52,8 @@ namespace _Project_Text_Detective
                         Study(player);
                         break;
                 }
+                Console.WriteLine("아무키나 누르세요");
+                Console.ReadKey();
             }
         }
         //===================================
@@ -56,7 +61,7 @@ namespace _Project_Text_Detective
         public static void Move(Player player)
         {
             Location[] movableLoca = GameRules.locaToLoca[player.Location];
-
+            
             Console.WriteLine("어디로 이동하겠습니까?");
             Console.WriteLine("[0] 취소");
 
@@ -132,7 +137,7 @@ namespace _Project_Text_Detective
             // 운동 2번 =  hp +1
 
             //체력이 1이하면 애초에 선택하지 못하게 해두도록 수정
-            if(player.Hp > 1)
+            if (player.Hp > 1)
             {
                 player.Hp--;
                 turnCount++;
@@ -158,7 +163,7 @@ namespace _Project_Text_Detective
             switch(subject)
             {
                 case 1:
-                    player.DeductAbility++;
+                    player.DeductAbility += 0.5f;
                     Console.WriteLine($"추리력이 상승했습니다. 현재 추리력: {player.DeductAbility}");
                     break;
                 case 2:
@@ -172,7 +177,7 @@ namespace _Project_Text_Detective
             }
         }
         //===================================
-        // 보기(집)
+        // 보기 메뉴 출력
         public static void SceneMain(Player player)
         {
             Behavior[] behaviors = GameRules.locaToBehave[player.Location];
@@ -181,6 +186,25 @@ namespace _Project_Text_Detective
                 Console.WriteLine($"[{i+1}] {BehaveKor[(int)behaviors[i]]}");
             }
 
+        }
+        //===================================
+        // 함수 - 상태창
+        public static void DisplayStatus(Player player)
+        {
+            Console.WriteLine("====내 정보====");
+            Console.WriteLine($"이름: {player.Name}       체력: {player.Hp}/{(int)player.MaxHp}      턴: {turnCount}" +
+                $"\n관찰력:{player.ObserveAbility}     판단력: {player.JudegeAbility}     추리력: {player.DeductAbility}");
+        }
+        //===================================
+        // 함수 - 추리수첩
+        public static void ShowDiary(Player player)
+        {
+            Console.WriteLine("====추리 수첩====");
+            for(int i = 0; i < Math.Min(player.Clues.Count, (int)player.DeductAbility); i++)
+            {
+                Console.WriteLine($"증거[{i+1}] {player.Clues[i].Name}");
+                Console.WriteLine($" - {player.Clues[i].Description}");
+            }
         }
         //===================================
         // 함수 - 정수 입력받기
