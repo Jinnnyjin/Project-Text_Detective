@@ -242,6 +242,14 @@ namespace _Project_Text_Detective
         // 함수 - 조사
         public static void Investigate(Player player)
         {
+            if (player.Location != Location.Cafe)
+            {
+                Console.WriteLine("특별히 조사할 것은 없는 것 같다.");
+                turnCount++;
+                player.Hp--;
+                return;
+            }
+
             //모두 모았다면
             if (player.Clues.Count == ClueCount)
             {
