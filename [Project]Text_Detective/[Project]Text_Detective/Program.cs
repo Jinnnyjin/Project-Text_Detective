@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Design;
+using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading.Channels;
 
@@ -20,6 +21,7 @@ namespace _Project_Text_Detective
         static string[] LocationKor = { "집", "카페", "도서관", "헬스장" };
         static int turnCount = 0;
         public static int ClueCount = 10;
+        static int Day = 1;
 
         static void Main(string[] args)
         {
@@ -64,10 +66,33 @@ namespace _Project_Text_Detective
                         StartDeduce(player);
                         break;
                 }
+
+                AddDay(player);
                 Console.WriteLine("아무키나 누르세요");
                 Console.ReadKey();
             }
         }
+        //===================================
+        // 함수 - 날짜 변경
+        public static void AddDay(Player player)
+        {
+            if (player.Hp <= 0)
+            {
+                Console.WriteLine("체력을 소진하였습니다.");
+                Day++;
+                player.Hp = (int)player.MaxHp;
+                if (player.Location != Location.Home)
+                {
+                    turnCount += 3;
+                    player.Location = Location.Home;
+                    Console.WriteLine("집이 아닌 곳에서 체력을 소진하였습니다. [패널티] 턴 3회 추가");
+                    Console.WriteLine("집으로 이동합니다.");
+
+                }
+                Console.WriteLine($"체력을 회복하고 다음날이 됩니다.   Day: {Day}");
+            }
+        }
+
         //===================================
         // 함수 - 추리
         public static void StartDeduce(Player player)
@@ -281,7 +306,7 @@ namespace _Project_Text_Detective
             // 운동 2번 =  hp +1
 
             //체력이 1이하면 애초에 선택하지 못하게 해두도록 수정
-            if (player.Hp > 1)
+            if (player.Hp >= 1)
             {
                 player.Hp--;
                 turnCount++;
@@ -349,7 +374,7 @@ namespace _Project_Text_Detective
         public static void DisplayStatus(Player player)
         {
             Console.WriteLine("====내 정보====");
-            Console.WriteLine($"이름: {player.Name}       체력: {player.Hp}/{(int)player.MaxHp}      턴: {turnCount}" +
+            Console.WriteLine($"이름: {player.Name}       체력: {player.Hp}/{(int)player.MaxHp}      턴: {turnCount}         Day: {Day}" +
                 $"\n관찰력:{player.ObserveAbility}     판단력: {player.JudegeAbility}     추리력: {player.DeductAbility}");
         }
         //===================================
