@@ -10,10 +10,10 @@ namespace _Project_Text_Detective
         // 장소마다 행동 선택지가 다름
         public static Dictionary<Location, Behavior[]> locaToBehave = new Dictionary<Location, Behavior[]>
         {
-            { Location.Home, new Behavior[]{ Behavior.Move, Behavior.Investigate, Behavior.Exercise, Behavior.Study } },
-            { Location.Cafe, new Behavior[]{ Behavior.Move, Behavior.Investigate} },
-            { Location.Library, new Behavior[]{ Behavior.Move, Behavior.Investigate,Behavior.Study } },
-            { Location.Gym, new Behavior[]{ Behavior.Move, Behavior.Investigate, Behavior.Exercise } }
+            { Location.Home, new Behavior[]{ Behavior.Move, Behavior.Investigate, Behavior.Exercise, Behavior.Study, Behavior.Diary } },
+            { Location.Cafe, new Behavior[]{ Behavior.Move, Behavior.Investigate, Behavior.Diary } },
+            { Location.Library, new Behavior[]{ Behavior.Move, Behavior.Investigate,Behavior.Study, Behavior.Diary } },
+            { Location.Gym, new Behavior[]{ Behavior.Move, Behavior.Investigate, Behavior.Exercise, Behavior.Diary } }
 
         };
 

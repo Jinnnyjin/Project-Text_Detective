@@ -5,20 +5,18 @@ using System.Threading.Channels;
 
 /*
 TODO :
-판단력 → 핵심 증거 표시
-수첩 전체 열람 기능 (새로 발견한 것) ← 이거 어디 넣을지
 80% 체크 → 법정 배틀
  */
 namespace _Project_Text_Detective
 {
     public enum Behavior
     {
-        Move, Investigate, Exercise, Study
+        Move, Investigate, Exercise, Study, Diary
     }
     internal class Program
     {
 
-        static string[] BehaveKor = { "이동", "조사", "운동", "공부" };
+        static string[] BehaveKor = { "이동", "조사", "운동", "공부", "추리 수첩 보기" };
         static string[] LocationKor = { "집", "카페", "도서관", "헬스장" };
         static int turnCount = 0;
         public static int ClueCount = 10;
@@ -58,6 +56,9 @@ namespace _Project_Text_Detective
                         break;
                     case Behavior.Study:
                         Study(player);
+                        break;
+                    case Behavior.Diary:
+                        OpenDiary(player);
                         break;
                 }
                 Console.WriteLine("아무키나 누르세요");
@@ -192,7 +193,7 @@ namespace _Project_Text_Detective
             player.Hp--;
             turnCount++;
             Random random = new Random();
-            int subject = random.Next(0,4);
+            int subject = random.Next(1,4);
             switch(subject)
             {
                 case 1:
@@ -232,7 +233,7 @@ namespace _Project_Text_Detective
         // 함수 - 추리수첩
         public static void ShowDiary(Player player)
         {
-            Console.WriteLine("====추리 수첩====");
+            Console.WriteLine("====추리 수첩 일부====");
             for(int i = 0; i < Math.Min(player.Clues.Count, (int)player.DeductAbility); i++)
             {
                 if(player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
@@ -241,6 +242,21 @@ namespace _Project_Text_Detective
 
                 Console.WriteLine($" - {player.Clues[i].Description}");
             }
+        }
+        //===================================
+        // 함수 - 추리수첩 오픈
+        public static void OpenDiary(Player player)
+        {
+            Console.WriteLine("====추리 수첩====");
+            for (int i = 0; i < player.Clues.Count; i++)
+            {
+                if (player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
+                    Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}          ★ 중요");
+                else Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}");
+
+                Console.WriteLine($" - {player.Clues[i].Description}");
+            }
+
         }
         //===================================
         // 함수 - 정수 입력받기

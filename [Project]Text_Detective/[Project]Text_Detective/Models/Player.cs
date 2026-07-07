@@ -25,7 +25,7 @@ namespace _Project_Text_Detective
             Hp = (int)MaxHp;
             this.Location = Location.Home;
 
-            JudegeAbility = 10;
+            JudegeAbility = 1;
             ObserveAbility = 1;
             DeductAbility = 1;
             Clues = new List<Clue>();
