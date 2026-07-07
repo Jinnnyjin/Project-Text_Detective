@@ -11,12 +11,12 @@ namespace _Project_Text_Detective
 {
     public enum Behavior
     {
-        Move, Investigate, Exercise, Study, Diary
+        Move, Investigate, Exercise, Study, Diary, Deduce
     }
     internal class Program
     {
 
-        static string[] BehaveKor = { "이동", "조사", "운동", "공부", "추리 수첩 보기" };
+        static string[] BehaveKor = { "이동", "조사", "운동", "공부", "추리 수첩 보기", "추리하기" };
         static string[] LocationKor = { "집", "카페", "도서관", "헬스장" };
         static int turnCount = 0;
         public static int ClueCount = 10;
@@ -34,8 +34,8 @@ namespace _Project_Text_Detective
                 DisplayStatus(player);
                 ShowDiary(player);
                 SceneMain(player);
-                Behavior[] behaviors = GameRules.locaToBehave[player.Location];
-                int choice = GetIntInput(0, behaviors.Length);
+                List<Behavior> behaviors = GetBehavior(player);
+                int choice = GetIntInput(0, behaviors.Count);
                 if(choice == 0)
                 {
                     isRunning = false;
@@ -59,6 +59,9 @@ namespace _Project_Text_Detective
                         break;
                     case Behavior.Diary:
                         OpenDiary(player);
+                        break;
+                    case Behavior.Deduce:
+                        //구현예정
                         break;
                 }
                 Console.WriteLine("아무키나 누르세요");
@@ -129,15 +132,15 @@ namespace _Project_Text_Detective
             List<Clue> critical = new List<Clue>();
             List<Clue> minor = new List<Clue>();
 
-            for (int i = 0; i < ClueData.clues.Count; i++)
+            for (int i = 0; i < ClueData.Tutoclues.Count; i++)
             {
-                if (ClueData.clues[i].Importance == ClueImportance.Critical)
+                if (ClueData.Tutoclues[i].Importance == ClueImportance.Critical)
                 {
-                    critical.Add(ClueData.clues[i]);
+                    critical.Add(ClueData.Tutoclues[i]);
                 }
                 else
                 {
-                    minor.Add(ClueData.clues[i]);
+                    minor.Add(ClueData.Tutoclues[i]);
                 }
             }
             int clueNum = 0;
@@ -214,13 +217,27 @@ namespace _Project_Text_Detective
         // 보기 메뉴 출력
         public static void SceneMain(Player player)
         {
-            Behavior[] behaviors = GameRules.locaToBehave[player.Location];
-            for (int i = 0; i < behaviors.Length; i++)
+            List<Behavior> behaviors = GetBehavior(player);
+            for (int i = 0; i < behaviors.Count; i++)
             {
                 Console.WriteLine($"[{i+1}] {BehaveKor[(int)behaviors[i]]}");
             }
-
         }
+        //===================================
+        // 함수 - 조건에 만족하는 행동 보기 
+        public static List<Behavior> GetBehavior(Player player)
+        {
+            List<Behavior> newBehaviors = new List<Behavior>(GameRules.locaToBehave[player.Location]);
+
+            bool has80percent = (float)player.Clues.Count / ClueData.Tutoclues.Count >= 0.8;
+            bool isAtCafe = (player.Location == Location.Cafe); 
+            if (has80percent && isAtCafe) 
+            {
+                newBehaviors.Add(Behavior.Deduce);
+            }
+                return newBehaviors;
+        }
+
         //===================================
         // 함수 - 상태창
         public static void DisplayStatus(Player player)

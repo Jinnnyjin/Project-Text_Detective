@@ -5,7 +5,7 @@ namespace _Project_Text_Detective
 
     public static class ClueData
     {
-        public static List<Clue> clues = new List<Clue>
+        public static List<Clue> Tutoclues = new List<Clue>
         {
             new Evidence {Name = "카페 내부 CCTV", Description = "매장 내부에 설치된 CCTV이다. 그 날 고장나있었기 때문에 녹화된 것이 없다. ", Importance = ClueImportance.Minor },
             new Evidence {Name = "충전기에 찍혀있는 지문", Description = " 피해자 지문 외의 [나사장]과 [알바생]의 지문도 추가검출 되었다.", Importance = ClueImportance.Minor },
