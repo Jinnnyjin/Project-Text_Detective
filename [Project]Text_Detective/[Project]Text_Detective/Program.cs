@@ -2,39 +2,21 @@
 
 namespace _Project_Text_Detective
 {
-    
+    public enum Behavior
+    {
+        Move, Investigate, Exercise, Study
+    }
     internal class Program
     {
-        // 장소마다 선택지가 다름. 각각 가능한 보기를 dictionary로 구현
-        static Dictionary<Location, Behavior[]> locaToBehave = new Dictionary<Location, Behavior[]>
-        {
-            { Location.Home, new Behavior[]{ Behavior.Move, Behavior.Search, Behavior.Exercise, Behavior.Study } },
-            { Location.Cafe, new Behavior[]{ Behavior.Move, Behavior.Search} },
-            { Location.Library, new Behavior[]{ Behavior.Move, Behavior.Search,Behavior.Study } },
-            { Location.Gym, new Behavior[]{ Behavior.Move, Behavior.Search, Behavior.Exercise } }
-
-        };
-
-        static Dictionary<Location, Location[]> locaToLoca = new Dictionary<Location, Location[]>
-        {
-            { Location.Home, new Location[]{ Location.Cafe, Location.Library, Location.Gym } },
-            { Location.Cafe, new Location[]{ Location.Home, Location.Library, Location.Gym } },
-            { Location.Library, new Location[]{ Location.Home, Location.Cafe, Location.Gym } },
-            { Location.Gym, new Location[]{ Location.Home, Location.Cafe, Location.Library } }
-        };
-
-        enum Behavior
-        {
-            Move, Search, Exercise, Study
-        }
 
         static string[] BehaveKor = { "이동", "조사", "운동", "공부" };
         static string[] LocationKor = { "집", "카페", "도서관", "헬스장" };
         static int turnCount = 0;
+        public static int ClueCount = 10;
 
         static void Main(string[] args)
         {
-            Console.Write("이름을 입력하세요");
+            Console.Write("이름을 입력하세요: ");
             string name = Console.ReadLine();
             Player player = new Player(name);
 
@@ -43,7 +25,7 @@ namespace _Project_Text_Detective
             {
                 
                 SceneMain(player);
-                Behavior[] behaviors = locaToBehave[player.Location];
+                Behavior[] behaviors = GameRules.locaToBehave[player.Location];
                 int choice = GetIntInput(0, behaviors.Length);
                 if(choice == 0)
                 {
@@ -57,7 +39,8 @@ namespace _Project_Text_Detective
                     case Behavior.Move:
                         Move(player);
                         break;
-                    case Behavior.Search:                       
+                    case Behavior.Investigate:
+                        Investigate(player);
                         break;
                     case Behavior.Exercise:
                         Exercise(player);
@@ -72,7 +55,7 @@ namespace _Project_Text_Detective
         // 함수 - 이동
         public static void Move(Player player)
         {
-            Location[] movableLoca = locaToLoca[player.Location];
+            Location[] movableLoca = GameRules.locaToLoca[player.Location];
 
             Console.WriteLine("어디로 이동하겠습니까?");
             Console.WriteLine("[0] 취소");
@@ -114,6 +97,33 @@ namespace _Project_Text_Detective
                     break;
 
             }
+        }
+        //===================================
+        // 함수 - 조사
+        public static void Investigate(Player player)
+        {
+            if (player.Clues.Count == ClueCount)
+            {
+                Console.WriteLine("이만하면 다 둘러본 모양이다. 여기서는 더이상 증거를 찾을 수 없을 것 같다.");
+                return;
+            }
+            
+            Random random = new Random();
+
+            int origin = player.Clues.Count;
+
+            while (player.Clues.Count == origin)
+            {
+                int clueNum = random.Next(0, 10);
+                
+                if (player.Clues.Contains(ClueData.clues[clueNum])) continue;
+                
+                player.Clues.Add(ClueData.clues[clueNum]);
+                Console.WriteLine($"{ClueData.clues[clueNum].Name}을 획득했습니다.");
+            }
+
+                player.Hp--;
+                turnCount++;
         }
         //===================================
         // 함수 - 운동
@@ -165,7 +175,7 @@ namespace _Project_Text_Detective
         // 보기(집)
         public static void SceneMain(Player player)
         {
-            Behavior[] behaviors = locaToBehave[player.Location];
+            Behavior[] behaviors = GameRules.locaToBehave[player.Location];
             for (int i = 0; i < behaviors.Length; i++)
             {
                 Console.WriteLine($"[{i+1}] {BehaveKor[(int)behaviors[i]]}");
