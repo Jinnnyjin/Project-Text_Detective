@@ -45,7 +45,7 @@ namespace _Project_Text_Detective
                     Program.OpenDiary(context.Player);
                     break;
                 case Behavior.Deduce:
-                    Program.StartDeduce(context.Player);
+                    GoTo(context, SceneKey.Deduce);
                     break;
             }
 

@@ -4,10 +4,6 @@ using System.Reflection.Metadata.Ecma335;
 using System.Threading.Channels;
 
 
-/*
-TODO : deduce 구현
-장소마다 조사 다르게 구현
- */
 namespace _Project_Text_Detective
 {
     public enum Behavior
@@ -63,8 +59,6 @@ namespace _Project_Text_Detective
 
 
             // 용의자 입력받기
-            Console.WriteLine("범인으로 추정되는 용의자를 지목하세요");
-
             for (int i = 0; i < suspects.Count; i++)
             {
                 Console.WriteLine($"[{i + 1}] {suspects[i].Name}");
@@ -128,6 +122,8 @@ namespace _Project_Text_Detective
                 if (!player.Clues.Contains(criticalClues[i]))
                 {
                     Console.WriteLine("중요한 증거를 아직 다 못 찾은 듯 하다.. 조금만 더 둘러보자");
+                    Console.WriteLine("아무키나 누르세요");
+                    Console.ReadKey();
                     return;
                 }
                 
@@ -142,6 +138,8 @@ namespace _Project_Text_Detective
 
             Console.WriteLine($"{reason}이 아닌 것 같다..");
             Console.WriteLine("다시 생각해보자");
+            Console.WriteLine("아무키나 누르세요");
+            Console.ReadKey();
 
             // 실패 패널티 턴+5
             turnCount += 5;

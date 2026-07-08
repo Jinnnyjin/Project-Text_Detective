@@ -22,6 +22,7 @@ namespace _Project_Text_Detective
         {
             AddScene(new TitleScene());
             AddScene(new MainScene());
+            AddScene(new DeduceScene());
         }
 
         private void AddScene(IScene scene)
