@@ -1,10 +1,18 @@
 ﻿using System;
+using System.Numerics;
 
 namespace _Project_Text_Detective
 {
     public enum Location
     {
         Home, Cafe, Library, Gym
+    }
+
+    public enum Stat
+    {
+        JudegeAbility,
+        ObserveAbility,
+        DeductAbility
     }
 
     public class Player : Character
@@ -35,6 +43,35 @@ namespace _Project_Text_Detective
             Clues = new List<Clue>();
         }
 
+        // clue 얻었을 때
+        public event Action<Clue> OnClueAcquired;
+        // 능력치 얻었을 때
+        public event Action<Stat> OnStatRaised;
+
+        public void AcquireClue(Clue clue)
+        {
+            Clues.Add(clue);
+            OnClueAcquired?.Invoke(clue);
+        }
+
+        public void RaiseStat(Stat stat)
+        {
+            switch(stat)
+            {
+                case Stat.ObserveAbility:
+                    ObserveAbility++;
+                    break;
+                case Stat.DeductAbility:
+                    DeductAbility += 0.5f;
+                    break;
+                case Stat.JudegeAbility:
+                    JudegeAbility++;
+                    break;
+            }
+            OnStatRaised?.Invoke(stat);
+        }
+
+        
     }
 }
 

@@ -42,7 +42,7 @@ namespace _Project_Text_Detective
                     Study(context.Player);
                     break;
                 case Behavior.Diary:
-                    OpenDiary(context.Player);
+                    GameUI.OpenDiary(context.Player);
                     break;
                 case Behavior.Deduce:
                     GoTo(context, SceneKey.Deduce);
@@ -163,7 +163,7 @@ namespace _Project_Text_Detective
                 }
             }
 
-            // 
+            
             int clueNum = 0;
             while (player.Clues.Count == origin)
             {
@@ -175,8 +175,7 @@ namespace _Project_Text_Detective
                     //이미 해당 증거를 가지고 있다면 패스
                     if (player.Clues.Contains(critical[clueNum])) continue;
 
-                    player.Clues.Add(critical[clueNum]);
-                    Console.WriteLine($"{critical[clueNum].Name}을 획득했습니다.");
+                    player.AcquireClue(critical[clueNum]);
                 }
                 //나머지 최소 60%확률로 일반 증거 획득
                 else
@@ -184,8 +183,7 @@ namespace _Project_Text_Detective
                     clueNum = random.Next(0, minor.Count);
                     if (player.Clues.Contains(minor[clueNum])) continue;
 
-                    player.Clues.Add(minor[clueNum]);
-                    Console.WriteLine($"{minor[clueNum].Name}을 획득했습니다.");
+                    player.AcquireClue(minor[clueNum]);
                 }
             }
 
@@ -220,22 +218,11 @@ namespace _Project_Text_Detective
             player.Hp--;
             player.TurnCount++;
             Random random = new Random();
-            int subject = random.Next(1, 4);
-            switch (subject)
-            {
-                case 1:
-                    player.DeductAbility += 0.5f;
-                    Console.WriteLine($"추리력이 상승했습니다. 현재 추리력: {player.DeductAbility}");
-                    break;
-                case 2:
-                    player.JudegeAbility++;
-                    Console.WriteLine($"판단력이 상승했습니다. 현재 판단력: {player.JudegeAbility}");
-                    break;
-                case 3:
-                    player.ObserveAbility++;
-                    Console.WriteLine($"관찰력이 상승했습니다. 현재 관찰력: {player.ObserveAbility}");
-                    break;
-            }
+            int num = random.Next(0, 3);
+
+            Stat[] stats = { Stat.ObserveAbility, Stat.DeductAbility, Stat.JudegeAbility };
+
+            player.RaiseStat(stats[num]);
         }
         //===================================
         // 보기 메뉴 출력
