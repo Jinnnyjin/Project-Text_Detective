@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Numerics;
 
+//TODO : 보기, 추리수첩, 입력창 수정 
+// + 추리씬도 다시 확인하기
 namespace _Project_Text_Detective
 {
     public class MainScene : SceneBase
@@ -13,6 +15,7 @@ namespace _Project_Text_Detective
             GameUI.ShowHeader();
             GameUI.DisplayStatus(context.Player);
             GameUI.ShowDiary(context.Player);
+            GameUI.ShowSystem(context);
             ShowOptions(context.Player);
         }
 
@@ -230,6 +233,14 @@ namespace _Project_Text_Detective
         public static void ShowOptions(Player player)
         {
             List<Behavior> behaviors = GetBehavior(player);
+
+            int lineWidth = 30;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"  ▶ 선택");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+
             for (int i = 0; i < behaviors.Count; i++)
             {
                 Console.WriteLine($"[{i + 1}] {GameRules.BehaveKor[(int)behaviors[i]]}");

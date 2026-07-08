@@ -13,6 +13,7 @@ namespace _Project_Text_Detective
             Console.Clear();
             GameUI.DisplayStatus(context.Player);
             GameUI.ShowDiary(context.Player);
+            GameUI.ShowSystem(context);
 
    
             // 용의자 입력받기

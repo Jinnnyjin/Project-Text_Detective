@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 namespace _Project_Text_Detective
 {
@@ -126,7 +127,35 @@ namespace _Project_Text_Detective
             }
 
         }
+        //===================================
+        // 시스템 정보창
+        public static void ShowSystem(GameContext context)
+        {
+            int lineWidth = 30;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"  ▶ 시스템 창");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
 
+            // 5줄까지만 보이게
+            for (int i = 0; i < 5; i++)
+            {
+                if (i < context.Logs.Count)
+                {
+                    Console.WriteLine(context.Logs[i]);
+                }
+                else
+                {
+                    Console.WriteLine();
+                }
+            }
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+
+            Console.WriteLine();
+        }
     }
 
 }
