@@ -13,6 +13,8 @@ namespace _Project_Text_Detective
         public float MaxHp { get; set; }
         public Location Location { get; set; }
         public List<Clue> Clues { get; set; }
+        public int TurnCount { get; set; }
+        public int Day { get; set; }
         
         public int JudegeAbility { get; set; } // 판단력
         public int ObserveAbility { get; set; } // 관찰력
@@ -24,6 +26,8 @@ namespace _Project_Text_Detective
             MaxHp = 15;
             Hp = (int)MaxHp;
             this.Location = Location.Home;
+            TurnCount = 0;
+            Day = 1;
 
             JudegeAbility = 1;
             ObserveAbility = 1;

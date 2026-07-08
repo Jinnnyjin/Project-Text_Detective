@@ -3,9 +3,16 @@
 
 namespace _Project_Text_Detective
 {
+    public enum Behavior
+    {
+        Move, Investigate, Exercise, Study, Diary, Deduce
+    }
 
     public static class GameRules
     {
+        public static string[] BehaveKor = { "이동", "조사", "운동", "공부", "추리 수첩 보기", "추리하기" };
+        public static string[] LocationKor = { "집", "카페", "도서관", "헬스장" };
+        public static int ClueCount = 10;
 
         // 장소마다 행동 선택지가 다름
         public static Dictionary<Location, Behavior[]> locaToBehave = new Dictionary<Location, Behavior[]>
