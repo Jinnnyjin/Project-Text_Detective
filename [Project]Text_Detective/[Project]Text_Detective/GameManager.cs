@@ -13,14 +13,15 @@ namespace _Project_Text_Detective
         private GameManager()
         {
             Context = new GameContext(this);
-
+            RegisterScenes();
         }
 
         public GameContext Context { get; }
 
         private void RegisterScenes()
         {
-            //
+            AddScene(new TitleScene());
+            AddScene(new MainScene());
         }
 
         private void AddScene(IScene scene)
@@ -38,7 +39,18 @@ namespace _Project_Text_Detective
 
             _currentScene?.Exit(Context);
             _currentScene = nextScene;
-            _currentScene.Enter(context);
+            _currentScene.Enter(Context);
+        }
+
+        public void Run()
+        {
+            ChangeScene(SceneKey.Title);
+
+            while (Context.IsRunning && _currentScene is not null)
+            {
+                _currentScene.Render(Context);
+                _currentScene.HandleInput(Context);
+            }
         }
     }
 

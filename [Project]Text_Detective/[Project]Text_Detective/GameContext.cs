@@ -11,10 +11,17 @@ namespace _Project_Text_Detective
             Game = game;
         }
 
+        public Random Random { get; } = new Random();
+
         public GameManager Game { get; }
+
+        public Player Player { get; set; }
+        public bool IsRunning { get; set; } = true;
+
 
         // 로그
         public List<string> Logs { get; } = new List<string>();
+
 
         public void AddLog(string message)
         {

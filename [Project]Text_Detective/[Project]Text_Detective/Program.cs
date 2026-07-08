@@ -25,52 +25,8 @@ namespace _Project_Text_Detective
 
         static void Main(string[] args)
         {
-            Console.Write("이름을 입력하세요: ");
-            string name = Console.ReadLine();
-            Player player = new Player(name);
-
-            bool isRunning = true;
-            while (isRunning)
-            {
-                Console.Clear();
-                DisplayStatus(player);
-                ShowDiary(player);
-                SceneMain(player);
-                List<Behavior> behaviors = GetBehavior(player);
-                int choice = GetIntInput(0, behaviors.Count);
-                if (choice == 0)
-                {
-                    isRunning = false;
-                    Console.WriteLine("게임을 종료합니다.");
-                    continue;
-                }
-
-                switch (behaviors[choice - 1])
-                {
-                    case Behavior.Move:
-                        Move(player);
-                        break;
-                    case Behavior.Investigate:
-                        Investigate(player);
-                        break;
-                    case Behavior.Exercise:
-                        Exercise(player);
-                        break;
-                    case Behavior.Study:
-                        Study(player);
-                        break;
-                    case Behavior.Diary:
-                        OpenDiary(player);
-                        break;
-                    case Behavior.Deduce:
-                        StartDeduce(player);
-                        break;
-                }
-
-                AddDay(player);
-                Console.WriteLine("아무키나 누르세요");
-                Console.ReadKey();
-            }
+            GameManager.instance.Run();
+            
         }
         //===================================
         // 함수 - 날짜 변경
