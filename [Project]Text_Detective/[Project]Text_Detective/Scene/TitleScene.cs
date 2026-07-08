@@ -10,7 +10,8 @@ namespace _Project_Text_Detective
 
         public override void Render(GameContext context)
         {
-            Console.WriteLine("=== 명탐정 키우기 ===");
+            GameUI.ShowHeader();
+
             Console.Write("이름을 입력하세요: ");
             
         }

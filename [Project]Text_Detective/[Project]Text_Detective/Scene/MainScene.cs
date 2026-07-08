@@ -10,6 +10,7 @@ namespace _Project_Text_Detective
         public override void Render(GameContext context)
         {
             Console.Clear();
+            GameUI.ShowHeader();
             GameUI.DisplayStatus(context.Player);
             GameUI.ShowDiary(context.Player);
             ShowOptions(context.Player);

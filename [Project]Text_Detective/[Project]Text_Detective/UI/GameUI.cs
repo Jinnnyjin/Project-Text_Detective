@@ -4,6 +4,40 @@ namespace _Project_Text_Detective
 {
     public static class GameUI
     {
+        //===================================
+        // 헤드라인
+        public static void ShowHeader()
+        {
+
+            int lineWidth = 70;
+            string title = " 범인은 누구? ";
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine(GetCentered(lineWidth,title));
+            Console.ResetColor();
+
+            
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+        }
+
+        //====================================
+        // 중앙
+        public static string GetCentered(int lineWidth, string title)
+        {
+            int padding = (lineWidth - title.Length) / 2;
+            string centered = new string(' ', padding) + title;
+
+            return centered;
+        }
+
+        //===================================
         // 정수 입력값 받기
         public static int GetIntInput(int min, int max)
         {
@@ -22,31 +56,66 @@ namespace _Project_Text_Detective
         // 함수 - 추리수첩(추리력 기반 일부)
         public static void ShowDiary(Player player)
         {
-            Console.WriteLine("====추리 수첩 일부====");
-            for (int i = 0; i < Math.Min(player.Clues.Count, (int)player.DeductAbility); i++)
+            int lineWidth = 30;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("  ▶ 추리 수첩");
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+
+            for (int i = 0; i <= Math.Min(player.Clues.Count, (int)player.DeductAbility); i++)
             {
+                if(player.Clues.Count == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine("비어있음");
+                    Console.ResetColor();
+                    break;
+                }
                 if (player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
                     Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}          ★중요");
                 else Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}");
 
                 Console.WriteLine($" - {player.Clues[i].Description}");
             }
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+            Console.WriteLine();
         }
 
         //===================================
         // 함수 - 상태창
         public static void DisplayStatus(Player player)
         {
-            Console.WriteLine("====내 정보====");
-            Console.WriteLine($"이름: {player.Name}       체력: {player.Hp}/{(int)player.MaxHp}      턴: {player.TurnCount}         Day: {player.Day}" +
+            int lineWidth = 30;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"  ▶ 내 정보 ({player.Name})");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+
+            Console.WriteLine($"체력: {player.Hp}/{(int)player.MaxHp}      턴: {player.TurnCount}         Day: {player.Day}        현위치: {GameRules.LocationKor[(int)player.Location]}" +
                 $"\n관찰력:{player.ObserveAbility}     판단력: {player.JudegeAbility}     추리력: {player.DeductAbility}");
+            Console.WriteLine();
         }
 
         //===================================
         // 함수 - 추리수첩 오픈
         public static void OpenDiary(Player player)
         {
-            Console.WriteLine("====추리 수첩====");
+
+            int lineWidth = 50;
+            string title = " << 추리 수첩 >> ";
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine(GetCentered(lineWidth,title));
+            Console.ResetColor();
+
             for (int i = 0; i < player.Clues.Count; i++)
             {
                 if (player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
