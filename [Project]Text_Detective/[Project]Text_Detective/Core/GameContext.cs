@@ -25,7 +25,7 @@ namespace _Project_Text_Detective
 
         public void AddLog(string message)
         {
-            Logs.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
+            Logs.Add($"{message}");
 
             while (Logs.Count > MaxLogCount)
             {

@@ -20,6 +20,8 @@ namespace _Project_Text_Detective
 
         private bool isSolved = false;
 
+        private string criminalName;
+
         public override void Enter(GameContext context)
         {
             currentmode = DeduceMode.SelectSuspect;
@@ -130,9 +132,10 @@ namespace _Project_Text_Detective
                     debates.Add(DebateData.TutoDebate[Num]);
                 }
                 debateIndex = 0;
+                criminalName = suspects[choice - 1].Name;
 
-                context.AddLog(debates[debateIndex].Statement);
-                context.AddLog("해당 진술에 대해 반박할 만한 증거를 선택하세요");
+                context.AddLog($"[{criminalName}] " + debates[debateIndex].Statement);
+                context.AddLog("[SYSTEM] 해당 진술에 대해 반박할 만한 증거를 선택하세요");
 
             }
             // 범인 선택 실패
@@ -151,7 +154,7 @@ namespace _Project_Text_Detective
 
             if (context.Player.Clues[choice - 1] == debates[debateIndex].RightClue)
             {
-                context.AddLog("제대로 반박한것 같다.");
+                context.AddLog("[SYSTEM] 제대로 반박한것 같다.");
                 debateIndex++;
 
                 if (debateIndex == 3)
@@ -161,8 +164,8 @@ namespace _Project_Text_Detective
                 }
                 else
                 {
-                    context.AddLog(debates[debateIndex].Statement);
-                    context.AddLog("해당 진술에 대해 반박할 만한 증거를 선택하세요");
+                    context.AddLog($"[{criminalName}] " + debates[debateIndex].Statement);
+                    context.AddLog("[SYSTEM] 해당 진술에 대해 반박할 만한 증거를 선택하세요");
                 }
             }
             else
@@ -192,16 +195,16 @@ namespace _Project_Text_Detective
             {
                 if (!context.Player.Clues.Contains(criticalClues[i]))
                 {
-                    context.AddLog("중요한 증거를 아직 다 못 찾은 듯 하다.. 조금만 더 둘러보자");
+                    context.AddLog("[SYSTEM] 중요한 증거를 아직 다 못 찾은 듯 하다.. 조금만 더 둘러보자");
                     return;
                 }
 
             }
 
             isSolved = true;
-            context.AddLog("범인을 찾았다! 이번 사건도 해결 완료!");
-            context.AddLog($"모든 사건을 해결하였습니다. 해결까지 걸린 턴 : {context.Player.TurnCount}");
-            context.AddLog("아무 키나 누르면 종료합니다.");
+            context.AddLog("[SYSTEM] 범인을 찾았다! 이번 사건도 해결 완료!");
+            context.AddLog($"[SYSTEM] 모든 사건을 해결하였습니다. 해결까지 걸린 턴 : {context.Player.TurnCount}");
+            context.AddLog("[SYSTEM] 아무 키나 누르면 종료합니다.");
 
             Render(context);
             Console.ReadKey();
@@ -214,8 +217,8 @@ namespace _Project_Text_Detective
         public void FailCatch(string reason, GameContext context)
         {
 
-            context.AddLog($"{reason}이 아닌 것 같다..다시 생각해보자");
-            context.AddLog("실패 패널티 턴 +5");
+            context.AddLog($"[SYSTEM] {reason}이 아닌 것 같다..다시 생각해보자");
+            context.AddLog("[SYSTEM] 실패 패널티 턴 +5");
 
             // 실패 패널티 턴+5
             context.Player.TurnCount += 5;

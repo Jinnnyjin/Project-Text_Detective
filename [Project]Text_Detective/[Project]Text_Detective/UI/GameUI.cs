@@ -62,7 +62,7 @@ namespace _Project_Text_Detective
                     if (input >= min && input <= max)
                     { return input; }
                 }
-                context.AddLog("\n잘못 입력했습니다. 보기 내 숫자만 입력가능");
+                context.AddLog("[SYSTEM] 잘못 입력했습니다. 보기 내 숫자만 입력가능");
             }
         }
 
@@ -209,13 +209,23 @@ namespace _Project_Text_Detective
             {
                 if (i < context.Logs.Count)
                 {
-                    Console.WriteLine(context.Logs[i]);
+                    if (i == context.Logs.Count - 1)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkCyan;
+                        Console.WriteLine(context.Logs[i]);
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.WriteLine(context.Logs[i]);
+                    }
                 }
                 else
                 {
                     Console.WriteLine();
                 }
             }
+
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine(new string('─', lineWidth));
             Console.ResetColor();

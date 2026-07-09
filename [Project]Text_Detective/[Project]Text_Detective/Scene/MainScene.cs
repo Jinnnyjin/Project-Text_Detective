@@ -53,7 +53,7 @@ namespace _Project_Text_Detective
                     if (choice == 0)
                     {
                         context.IsRunning = false;
-                        context.AddLog("게임을 종료합니다.");
+                        context.AddLog("[SYSTEM] 게임을 종료합니다.");
                         return;
                     }
 
@@ -61,7 +61,7 @@ namespace _Project_Text_Detective
                     {
                         case Behavior.Move:
                             currentMode = MainMode.Moving;
-                            context.AddLog("이동할 곳을 선택하세요.");
+                            context.AddLog("[SYSTEM] 이동할 곳을 선택하세요.");
                             return;
                         case Behavior.Investigate:
                             Investigate(context);
@@ -77,7 +77,7 @@ namespace _Project_Text_Detective
                             return;
                         case Behavior.Deduce:
                             GoTo(context, SceneKey.Deduce);
-                            context.AddLog("범인으로 추정되는 용의자를 지목하세요");
+                            context.AddLog("[SYSTEM] 범인으로 추정되는 용의자를 지목하세요");
                             break;
                     }
                     break;
@@ -94,7 +94,7 @@ namespace _Project_Text_Detective
                     }
 
                     Location selected = movableLoca[choice - 1];
-                    context.AddLog($"{GameRules.LocationKor[(int)selected]}로 이동합니다.");
+                    context.AddLog($"[SYSTEM] {GameRules.LocationKor[(int)selected]}로 이동합니다.");
                     context.Player.Location = selected;
                     context.Player.ConsumeTurn();
                     
@@ -118,18 +118,18 @@ namespace _Project_Text_Detective
         {
             if (context.Player.Hp <= 0)
             {
-                context.AddLog("체력을 소진하였습니다.");
+                context.AddLog("[SYSTEM] 체력을 소진하였습니다.");
                 GameRules.Day++;
                 context.Player.Hp = (int)context.Player.MaxHp;
                 if (context.Player.Location != Location.Home)
                 {
                     context.Player.TurnCount += 3;
                     context.Player.Location = Location.Home;
-                    context.AddLog("집이 아닌 곳에서 체력을 소진하였습니다. [패널티] 턴 3회 추가");
-                    context.AddLog("집으로 이동합니다.");
+                    context.AddLog("[SYSTEM] 집이 아닌 곳에서 체력을 소진하였습니다. [패널티] 턴 3회 추가");
+                    context.AddLog("[SYSTEM] 집으로 이동합니다.");
 
                 }
-                context.AddLog($"체력을 회복하고 다음날이 됩니다.   Day: {GameRules.Day}");
+                context.AddLog($"[SYSTEM] 체력을 회복하고 다음날이 됩니다.   Day: {GameRules.Day}");
             }
         }
 
@@ -161,7 +161,7 @@ namespace _Project_Text_Detective
         {
             if (context.Player.Location != Location.Cafe)
             {
-                context.AddLog("특별히 조사할 것은 없는 것 같다.");
+                context.AddLog("[SYSTEM] 특별히 조사할 것은 없는 것 같다.");
                 context.Player.ConsumeTurn();
                 return;
             }
@@ -169,7 +169,7 @@ namespace _Project_Text_Detective
             //모두 모았다면
             if (context.Player.Clues.Count == GameRules.ClueCount)
             {
-                context.AddLog("이만하면 다 둘러본 모양이다. 여기서는 더이상 증거를 찾을 수 없을 것 같다.");
+                context.AddLog("[SYSTEM] 이만하면 다 둘러본 모양이다. 여기서는 더이상 증거를 찾을 수 없을 것 같다.");
                 return;
             }
 
@@ -225,7 +225,7 @@ namespace _Project_Text_Detective
             // 운동 2번 =  hp +1
 
             context.Player.ConsumeTurn();
-            context.AddLog("운동을 하고 상쾌해집니다! 체력 증가!");
+            context.AddLog("[SYSTEM] 운동을 하고 상쾌해집니다! 체력 증가!");
             context.Player.MaxHp += 0.5f;
         }
 
