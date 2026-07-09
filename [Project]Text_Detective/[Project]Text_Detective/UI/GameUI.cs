@@ -56,6 +56,10 @@ namespace _Project_Text_Detective
         {
             while (true)
             {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(" 입력 >> ");
+                Console.ResetColor();
                 if (int.TryParse(Console.ReadLine(), out int input))
                 {
                     if (input >= min && input <= max)
@@ -89,10 +93,25 @@ namespace _Project_Text_Detective
                 for (int i = 0; i < Math.Min(player.Clues.Count, (int)player.DeductAbility); i++)
                 {
                     if (player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
-                        Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}          ★중요");
-                    else Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}");
+                    { 
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"증거[{i + 1}]    ");
+                        Console.ResetColor();
+                        Console.Write($"{player.Clues[i].Name}          ");
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                        Console.WriteLine($"★ 중요");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"증거[{i + 1}]    ");
+                        Console.ResetColor();
+                        Console.WriteLine($"{player.Clues[i].Name}          ");
+                    }
 
-                    Console.WriteLine($" - {player.Clues[i].Description}");
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine($"      - {player.Clues[i].Description}");
+                    Console.ResetColor();
                 }
             }
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -144,12 +163,28 @@ namespace _Project_Text_Detective
 
             for (int i = 0; i < player.Clues.Count; i++)
             {
-                if (player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
-                    Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}          ★ 중요");
-                else Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}");
+                    if (player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"증거[{i + 1}]    ");
+                        Console.ResetColor();
+                        Console.Write($"{player.Clues[i].Name}          ");
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                        Console.WriteLine($"★ 중요");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write($"증거[{i + 1}]    ");
+                        Console.ResetColor();
+                        Console.WriteLine($"{player.Clues[i].Name}          ");
+                    }
 
-                Console.WriteLine($" - {player.Clues[i].Description}");
-            }
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine($"      - {player.Clues[i].Description}");
+                    Console.ResetColor();
+                    Console.WriteLine();
+                }
             
             }
             Console.WriteLine();
