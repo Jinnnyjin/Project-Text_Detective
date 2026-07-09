@@ -3,7 +3,7 @@
 namespace _Project_Text_Detective
 {
 
-    public enum DeduceMode
+    public enum DeduceMode  
     {
         SelectSuspect, Debating, Result
     }
@@ -17,6 +17,16 @@ namespace _Project_Text_Detective
         private List<Debate> debates = new List<Debate>();
 
         private int debateIndex = 0;
+
+        private bool isSolved = false;
+
+        public override void Enter(GameContext context)
+        {
+            currentmode = DeduceMode.SelectSuspect;
+            debates.Clear();
+            debateIndex = 0;
+            isSolved = false;
+        }
 
 
         public override void Render(GameContext context)
@@ -59,7 +69,10 @@ namespace _Project_Text_Detective
 
                 case DeduceMode.Result:
 
-                    GoTo(context, SceneKey.MainScene);
+                    if(!isSolved)
+                    {
+                        GoTo(context, SceneKey.MainScene);
+                    }
                     break;
             }
         }
@@ -184,8 +197,15 @@ namespace _Project_Text_Detective
                 }
 
             }
-            
+
+            isSolved = true;
             context.AddLog("범인을 찾았다! 이번 사건도 해결 완료!");
+            context.AddLog($"모든 사건을 해결하였습니다. 해결까지 걸린 턴 : {context.Player.TurnCount}");
+            context.AddLog("아무 키나 누르면 종료합니다.");
+
+            Render(context);
+            Console.ReadKey();
+            context.IsRunning = false;
 
         }
         
