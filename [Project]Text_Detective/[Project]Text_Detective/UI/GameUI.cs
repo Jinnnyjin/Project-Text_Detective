@@ -78,7 +78,11 @@ namespace _Project_Text_Detective
             Console.WriteLine(new string('─', lineWidth));
             Console.ResetColor();
 
-            if (player.Clues.Count == 0)
+            List<Clue> sortedClues = new List<Clue>(player.Clues);
+            sortedClues.Sort((a, b) => a.Importance.CompareTo(b.Importance));
+
+
+            if (sortedClues.Count == 0)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.WriteLine(" ( 비어있음 ) ");
@@ -87,14 +91,14 @@ namespace _Project_Text_Detective
             else
             {
 
-                for (int i = 0; i < Math.Min(player.Clues.Count, (int)player.DeductAbility); i++)
+                for (int i = 0; i < Math.Min(sortedClues.Count, (int)player.DeductAbility); i++)
                 {
-                    if (player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
+                    if (player.JudegeAbility >= 10 && sortedClues[i].Importance == ClueImportance.Critical)
                     { 
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write($"증거[{i + 1}]    ");
                         Console.ResetColor();
-                        Console.Write($"{player.Clues[i].Name}          ");
+                        Console.Write($"{sortedClues[i].Name}          ");
                         Console.ForegroundColor = ConsoleColor.DarkBlue;
                         Console.WriteLine($"★ 중요");
                     }
@@ -103,11 +107,11 @@ namespace _Project_Text_Detective
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.Write($"증거[{i + 1}]    ");
                         Console.ResetColor();
-                        Console.WriteLine($"{player.Clues[i].Name}          ");
+                        Console.WriteLine($"{sortedClues[i].Name}          ");
                     }
 
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine($"      - {player.Clues[i].Description}");
+                    Console.WriteLine($"      - {sortedClues[i].Description}");
                     Console.ResetColor();
                 }
             }
