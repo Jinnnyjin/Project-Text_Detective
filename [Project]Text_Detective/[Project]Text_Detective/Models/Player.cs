@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 
 namespace _Project_Text_Detective
 {
@@ -69,7 +68,11 @@ namespace _Project_Text_Detective
             OnStatRaised?.Invoke(stat);
         }
 
-        
+        public void ConsumeTurn()
+        {
+            Hp--;
+            TurnCount++;
+        }
     }
 }
 

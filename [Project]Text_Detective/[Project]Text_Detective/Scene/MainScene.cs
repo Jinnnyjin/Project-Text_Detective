@@ -70,7 +70,7 @@ namespace _Project_Text_Detective
                             Exercise(context);
                             break;
                         case Behavior.Study:
-                            Study(context.Player);
+                            Study(context);
                             break;
                         case Behavior.Diary:
                             currentMode = MainMode.ViewDiary;
@@ -86,38 +86,18 @@ namespace _Project_Text_Detective
                 case MainMode.Moving:
                     Location[] movableLoca = GameRules.locaToLoca[context.Player.Location];
                     choice = GameUI.GetIntInput(context, 0, movableLoca.Length);
+
                     if (choice == 0)
                     {
                         currentMode = MainMode.Default;
                         return;
                     }
-                    switch (movableLoca[choice - 1])
-                    {
-                        case Location.Cafe:
-                            context.AddLog("카페로 이동합니다.");
-                            context.Player.Location = Location.Cafe;
-                            context.Player.TurnCount++;
-                            context.Player.Hp--;
-                            break;
-                        case Location.Library:
-                            context.AddLog("도서관으로 이동합니다.");
-                            context.Player.Location = Location.Library;
-                            context.Player.TurnCount++;
-                            context.Player.Hp--;
-                            break;
-                        case Location.Gym:
-                            context.AddLog("헬스장으로 이동합니다.");
-                            context.Player.Location = Location.Gym;
-                            context.Player.TurnCount++;
-                            context.Player.Hp--;
-                            break;
-                        case Location.Home:
-                            context.AddLog("집으로 이동합니다.");
-                            context.Player.Location = Location.Home;
-                            context.Player.TurnCount++;
-                            context.Player.Hp--;
-                            break;
-                    } 
+
+                    Location selected = movableLoca[choice - 1];
+                    context.AddLog($"{GameRules.LocationKor[(int)selected]}로 이동합니다.");
+                    context.Player.Location = selected;
+                    context.Player.ConsumeTurn();
+                    
                     break;
 
                 // 추리수첩
@@ -134,7 +114,7 @@ namespace _Project_Text_Detective
 
         //===================================
         // 함수 - 날짜 변경
-        public static void AddDay(GameContext context)
+        public void AddDay(GameContext context)
         {
             if (context.Player.Hp <= 0)
             {
@@ -155,7 +135,7 @@ namespace _Project_Text_Detective
 
         //===================================
         // 이동 선택지
-        public static void MoveOptions(GameContext context) 
+        public void MoveOptions(GameContext context) 
         {
             Location[] movableLoca = GameRules.locaToLoca[context.Player.Location];
 
@@ -177,13 +157,12 @@ namespace _Project_Text_Detective
         }
         //===================================
         // 함수 - 조사
-        public static void Investigate(GameContext context)
+        public void Investigate(GameContext context)
         {
             if (context.Player.Location != Location.Cafe)
             {
                 context.AddLog("특별히 조사할 것은 없는 것 같다.");
-                context.Player.TurnCount++;
-                context.Player.Hp--;
+                context.Player.ConsumeTurn();
                 return;
             }
 
@@ -193,8 +172,6 @@ namespace _Project_Text_Detective
                 context.AddLog("이만하면 다 둘러본 모양이다. 여기서는 더이상 증거를 찾을 수 없을 것 같다.");
                 return;
             }
-
-            Random random = new Random();
 
             // 얻었는지 확인용 변수
             int origin = context.Player.Clues.Count;
@@ -219,11 +196,11 @@ namespace _Project_Text_Detective
             int clueNum = 0;
             while (context.Player.Clues.Count == origin)
             {
-                int criticalPercentage = random.Next(0, 100);
+                int criticalPercentage = context.Random.Next(0, 100);
                 // 최대 40%확률로 핵심 증거 획득
                 if (criticalPercentage <= 20 + Math.Min(20, context.Player.ObserveAbility))
                 {
-                    clueNum = random.Next(0, critical.Count);
+                    clueNum = context.Random.Next(0, critical.Count);
                     //이미 해당 증거를 가지고 있다면 패스
                     if (context.Player.Clues.Contains(critical[clueNum])) continue;
 
@@ -232,53 +209,40 @@ namespace _Project_Text_Detective
                 //나머지 최소 60%확률로 일반 증거 획득
                 else
                 {
-                    clueNum = random.Next(0, minor.Count);
+                    clueNum = context.Random.Next(0, minor.Count);
                     if (context.Player.Clues.Contains(minor[clueNum])) continue;
 
                     context.Player.AcquireClue(minor[clueNum]);
                 }
             }
 
-            context.Player.Hp--;
-            context.Player.TurnCount++;
+            context.Player.ConsumeTurn();
         }
         //===================================
         // 함수 - 운동
-        public static void Exercise(GameContext context)
+        public void Exercise(GameContext context)
         {
             // 운동 2번 =  hp +1
 
-            //체력이 1이하면 애초에 선택하지 못하게 해두도록 수정
-            if (context.Player.Hp >= 1)
-            {
-                context.Player.Hp--;
-                context.Player.TurnCount++;
-                context.AddLog("운동을 하고 상쾌해집니다! 체력 증가!");
-                context.Player.MaxHp += 0.5f;
-
-            }
-            else
-            {
-                context.AddLog("체력이 부족합니다.");
-            }
+            context.Player.ConsumeTurn();
+            context.AddLog("운동을 하고 상쾌해집니다! 체력 증가!");
+            context.Player.MaxHp += 0.5f;
         }
 
         //===================================
         // 함수 - 공부
-        public static void Study(Player player)
+        public void Study(GameContext context)
         {
-            player.Hp--;
-            player.TurnCount++;
-            Random random = new Random();
-            int num = random.Next(0, 3);
+            context.Player.ConsumeTurn();
+            int num = context.Random.Next(0, 3);
 
             Stat[] stats = { Stat.ObserveAbility, Stat.DeductAbility, Stat.JudegeAbility };
 
-            player.RaiseStat(stats[num]);
+            context.Player.RaiseStat(stats[num]);
         }
         //===================================
         // 다이어리 메뉴(뒤로가기용)
-        public static void DiaryOptions(Player player)
+        public void DiaryOptions(Player player)
         {
             GameUI.DivideSelect();
 
@@ -290,7 +254,7 @@ namespace _Project_Text_Detective
 
         //===================================
         // 보기 메뉴 출력
-        public static void ShowOptions(Player player)
+        public void ShowOptions(Player player)
         {
             List<Behavior> behaviors = GetBehavior(player);
 
@@ -306,7 +270,7 @@ namespace _Project_Text_Detective
         }
         //===================================
         // 함수 - 조건에 만족하는 행동 보기 
-        public static List<Behavior> GetBehavior(Player player)
+        public List<Behavior> GetBehavior(Player player)
         {
             List<Behavior> newBehaviors = new List<Behavior>(GameRules.locaToBehave[player.Location]);
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 
 namespace _Project_Text_Detective
 {
@@ -64,11 +63,9 @@ namespace _Project_Text_Detective
                     break;
             }
         }
-
-
         //===================================
-        // 용의자 선택창
-        public void SuspectOptions()
+        // 함수 - 용의자 도출
+        public List<Character> GetSuspect()
         {
             List<Character> suspects = new List<Character>();
             for (int i = 0; i < CharacterData.TutoCharacters.Count; i++)
@@ -76,6 +73,15 @@ namespace _Project_Text_Detective
                 if (CharacterData.TutoCharacters[i].Type != CharacterType.Victim)
                 { suspects.Add(CharacterData.TutoCharacters[i]); }
             }
+
+            return suspects;
+        }
+
+        //===================================
+        // 용의자 선택창
+        public void SuspectOptions()
+        {
+            List<Character> suspects = GetSuspect();
 
             GameUI.DivideSelect();
 
@@ -86,20 +92,13 @@ namespace _Project_Text_Detective
                 Console.ResetColor();
                 Console.WriteLine($" {suspects[i].Name}");
             }
-
         }
-
         //===================================
         // 함수 - 추리
         public void StartDeduce(GameContext context)
         {
             // 캐릭터 중 용의자 추리기 ( 피해자 1명 빼기 )
-            List<Character> suspects = new List<Character>();
-            for (int i = 0; i < CharacterData.TutoCharacters.Count; i++)
-            {
-                if (CharacterData.TutoCharacters[i].Type != CharacterType.Victim)
-                { suspects.Add(CharacterData.TutoCharacters[i]); }
-            }
+            List<Character> suspects = GetSuspect();
 
             int choice = GameUI.GetIntInput(context, 1, suspects.Count);
 
