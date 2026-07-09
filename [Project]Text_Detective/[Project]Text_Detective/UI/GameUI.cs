@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Channels;
 
 namespace _Project_Text_Detective
@@ -23,6 +24,18 @@ namespace _Project_Text_Detective
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+        }
+
+        //===================================
+        // 선택 구분창
+        public static void DivideSelect()
+        {
+            int lineWidth = 30;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"  ▶ 선택");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine(new string('─', lineWidth));
             Console.ResetColor();
         }

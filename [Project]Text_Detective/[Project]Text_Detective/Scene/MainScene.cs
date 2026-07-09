@@ -77,6 +77,7 @@ namespace _Project_Text_Detective
                             return;
                         case Behavior.Deduce:
                             GoTo(context, SceneKey.Deduce);
+                            context.AddLog("범인으로 추정되는 용의자를 지목하세요");
                             break;
                     }
                     break;
@@ -153,17 +154,12 @@ namespace _Project_Text_Detective
         }
 
         //===================================
-        // 함수 - 이동
+        // 이동 선택지
         public static void MoveOptions(GameContext context) 
         {
             Location[] movableLoca = GameRules.locaToLoca[context.Player.Location];
 
-            int lineWidth = 30;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"  ▶ 선택");
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine(new string('─', lineWidth));
-            Console.ResetColor();
+            GameUI.DivideSelect();
 
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write(" 0) ");
@@ -284,12 +280,8 @@ namespace _Project_Text_Detective
         // 다이어리 메뉴(뒤로가기용)
         public static void DiaryOptions(Player player)
         {
-            int lineWidth = 30;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"  ▶ 선택");
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine(new string('─', lineWidth));
-            Console.ResetColor();
+            GameUI.DivideSelect();
+
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write($" 0)");
             Console.ResetColor();
@@ -302,12 +294,7 @@ namespace _Project_Text_Detective
         {
             List<Behavior> behaviors = GetBehavior(player);
 
-            int lineWidth = 30;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"  ▶ 선택");
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine(new string('─', lineWidth));
-            Console.ResetColor();
+            GameUI.DivideSelect();
 
             for (int i = 0; i < behaviors.Count; i++)
             {
