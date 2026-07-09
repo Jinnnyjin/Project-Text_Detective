@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Numerics;
+using System.Security;
 
 //TODO : 보기, 추리수첩, 입력창 수정 
 // + 추리씬도 다시 확인하기
 namespace _Project_Text_Detective
 {
+
+    public enum MainMode
+    {
+        Default, Moving, ViewDiary
+    }
+
     public class MainScene : SceneBase
     {
         public override SceneKey Key => SceneKey.MainScene;
+
+        public MainMode currentMode = MainMode.Default;
 
         public override void Render(GameContext context)
         {
@@ -16,140 +25,183 @@ namespace _Project_Text_Detective
             GameUI.DisplayStatus(context.Player);
             GameUI.ShowDiary(context.Player);
             GameUI.ShowSystem(context);
-            ShowOptions(context.Player);
+            
+            switch (currentMode)
+            {
+                case MainMode.Default:
+                    ShowOptions(context.Player);
+                    break;
+                case MainMode.Moving:
+                    MoveOptions(context);
+                    break;
+                case MainMode.ViewDiary:
+                    GameUI.OpenDiary(context.Player);
+                    break;
+            }
+            
         }
 
         public override void HandleInput(GameContext context)
         {
-            List<Behavior> behaviors = GetBehavior(context.Player);
-            int choice = GameUI.GetIntInput(0, behaviors.Count);
-
-            if (choice == 0)
+            switch(currentMode)
             {
-                context.IsRunning = false;
-                Console.WriteLine("게임을 종료합니다.");
-                return;
-            }
+                //기본
+                case MainMode.Default:
+                    List<Behavior> behaviors = GetBehavior(context.Player);
+                    int choice = GameUI.GetIntInput(context, 0, behaviors.Count);
 
-            switch (behaviors[choice - 1])
-            {
-                case Behavior.Move:
-                    Move(context.Player);
+                    if (choice == 0)
+                    {
+                        context.IsRunning = false;
+                        context.AddLog("게임을 종료합니다.");
+                        return;
+                    }
+
+                    switch (behaviors[choice - 1])
+                    {
+                        case Behavior.Move:
+                            currentMode = MainMode.Moving;
+                            context.AddLog("이동할 곳을 선택하세요.");
+                            return;
+                        case Behavior.Investigate:
+                            Investigate(context);
+                            break;
+                        case Behavior.Exercise:
+                            Exercise(context);
+                            break;
+                        case Behavior.Study:
+                            Study(context.Player);
+                            break;
+                        case Behavior.Diary:
+                            currentMode = MainMode.ViewDiary;
+                            return;
+                        case Behavior.Deduce:
+                            GoTo(context, SceneKey.Deduce);
+                            break;
+                    }
                     break;
-                case Behavior.Investigate:
-                    Investigate(context.Player);
+
+                //이동
+                case MainMode.Moving:
+                    Location[] movableLoca = GameRules.locaToLoca[context.Player.Location];
+                    choice = GameUI.GetIntInput(context, 0, movableLoca.Length);
+                    if (choice == 0)
+                    {
+                        currentMode = MainMode.Default;
+                        return;
+                    }
+                    switch (movableLoca[choice - 1])
+                    {
+                        case Location.Cafe:
+                            context.AddLog("카페로 이동합니다.");
+                            context.Player.Location = Location.Cafe;
+                            context.Player.TurnCount++;
+                            context.Player.Hp--;
+                            break;
+                        case Location.Library:
+                            context.AddLog("도서관으로 이동합니다.");
+                            context.Player.Location = Location.Library;
+                            context.Player.TurnCount++;
+                            context.Player.Hp--;
+                            break;
+                        case Location.Gym:
+                            context.AddLog("헬스장으로 이동합니다.");
+                            context.Player.Location = Location.Gym;
+                            context.Player.TurnCount++;
+                            context.Player.Hp--;
+                            break;
+                        case Location.Home:
+                            context.AddLog("집으로 이동합니다.");
+                            context.Player.Location = Location.Home;
+                            context.Player.TurnCount++;
+                            context.Player.Hp--;
+                            break;
+                    } 
                     break;
-                case Behavior.Exercise:
-                    Exercise(context.Player);
-                    break;
-                case Behavior.Study:
-                    Study(context.Player);
-                    break;
-                case Behavior.Diary:
-                    GameUI.OpenDiary(context.Player);
-                    break;
-                case Behavior.Deduce:
-                    GoTo(context, SceneKey.Deduce);
+
+                // 추리수첩
+                case MainMode.ViewDiary:
+                    DiaryOptions(context.Player);
+                    choice = GameUI.GetIntInput(context,0, 0);
+                    Console.WriteLine();
                     break;
             }
-
-            AddDay(context.Player);
-            Console.WriteLine("아무키나 누르세요");
-            Console.ReadKey();
+            currentMode = MainMode.Default;
+            AddDay(context);
 
         }
 
         //===================================
         // 함수 - 날짜 변경
-        public static void AddDay(Player player)
+        public static void AddDay(GameContext context)
         {
-            if (player.Hp <= 0)
+            if (context.Player.Hp <= 0)
             {
-                Console.WriteLine("체력을 소진하였습니다.");
-                player.Day++;
-                player.Hp = (int)player.MaxHp;
-                if (player.Location != Location.Home)
+                context.AddLog("체력을 소진하였습니다.");
+                GameRules.Day++;
+                context.Player.Hp = (int)context.Player.MaxHp;
+                if (context.Player.Location != Location.Home)
                 {
-                    player.TurnCount += 3;
-                    player.Location = Location.Home;
-                    Console.WriteLine("집이 아닌 곳에서 체력을 소진하였습니다. [패널티] 턴 3회 추가");
-                    Console.WriteLine("집으로 이동합니다.");
+                    context.Player.TurnCount += 3;
+                    context.Player.Location = Location.Home;
+                    context.AddLog("집이 아닌 곳에서 체력을 소진하였습니다. [패널티] 턴 3회 추가");
+                    context.AddLog("집으로 이동합니다.");
 
                 }
-                Console.WriteLine($"체력을 회복하고 다음날이 됩니다.   Day: {player.Day}");
+                context.AddLog($"체력을 회복하고 다음날이 됩니다.   Day: {GameRules.Day}");
             }
         }
 
         //===================================
         // 함수 - 이동
-        public static void Move(Player player)
+        public static void MoveOptions(GameContext context) 
         {
-            Location[] movableLoca = GameRules.locaToLoca[player.Location];
+            Location[] movableLoca = GameRules.locaToLoca[context.Player.Location];
 
-            Console.WriteLine("어디로 이동하겠습니까?");
-            Console.WriteLine("[0] 취소");
+            int lineWidth = 30;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"  ▶ 선택");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write(" 0) ");
+            Console.ResetColor();
+            Console.WriteLine("취소");
 
             for (int i = 0; i < movableLoca.Length; i++)
             {
-                Console.WriteLine($"[{i + 1}] {GameRules.LocationKor[(int)movableLoca[i]]}");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write($" {i + 1}) ");
+                Console.ResetColor();
+                Console.WriteLine($"{GameRules.LocationKor[(int)movableLoca[i]]}");
             }
 
-            // 0 따로 취소처리
-            int choice = GameUI.GetIntInput(0, movableLoca.Length);
-            if (choice == 0) return;
-
-            switch (movableLoca[choice - 1])
-            {
-                case Location.Cafe:
-                    Console.WriteLine("카페로 이동합니다.");
-                    player.Location = Location.Cafe;
-                    player.TurnCount++;
-                    player.Hp--;
-                    break;
-                case Location.Library:
-                    Console.WriteLine("도서관으로 이동합니다.");
-                    player.Location = Location.Library;
-                    player.TurnCount++;
-                    player.Hp--;
-                    break;
-                case Location.Gym:
-                    Console.WriteLine("헬스장으로 이동합니다.");
-                    player.Location = Location.Gym;
-                    player.TurnCount++;
-                    player.Hp--;
-                    break;
-                case Location.Home:
-                    Console.WriteLine("집으로 이동합니다.");
-                    player.Location = Location.Home;
-                    player.TurnCount++;
-                    player.Hp--;
-                    break;
-
-            }
         }
         //===================================
         // 함수 - 조사
-        public static void Investigate(Player player)
+        public static void Investigate(GameContext context)
         {
-            if (player.Location != Location.Cafe)
+            if (context.Player.Location != Location.Cafe)
             {
-                Console.WriteLine("특별히 조사할 것은 없는 것 같다.");
-                player.TurnCount++;
-                player.Hp--;
+                context.AddLog("특별히 조사할 것은 없는 것 같다.");
+                context.Player.TurnCount++;
+                context.Player.Hp--;
                 return;
             }
 
             //모두 모았다면
-            if (player.Clues.Count == GameRules.ClueCount)
+            if (context.Player.Clues.Count == GameRules.ClueCount)
             {
-                Console.WriteLine("이만하면 다 둘러본 모양이다. 여기서는 더이상 증거를 찾을 수 없을 것 같다.");
+                context.AddLog("이만하면 다 둘러본 모양이다. 여기서는 더이상 증거를 찾을 수 없을 것 같다.");
                 return;
             }
 
             Random random = new Random();
 
             // 얻었는지 확인용 변수
-            int origin = player.Clues.Count;
+            int origin = context.Player.Clues.Count;
 
             // 증거 등급별 분할
             List<Clue> critical = new List<Clue>();
@@ -169,49 +221,49 @@ namespace _Project_Text_Detective
 
             
             int clueNum = 0;
-            while (player.Clues.Count == origin)
+            while (context.Player.Clues.Count == origin)
             {
                 int criticalPercentage = random.Next(0, 100);
                 // 최대 40%확률로 핵심 증거 획득
-                if (criticalPercentage <= 20 + Math.Min(20, player.ObserveAbility))
+                if (criticalPercentage <= 20 + Math.Min(20, context.Player.ObserveAbility))
                 {
                     clueNum = random.Next(0, critical.Count);
                     //이미 해당 증거를 가지고 있다면 패스
-                    if (player.Clues.Contains(critical[clueNum])) continue;
+                    if (context.Player.Clues.Contains(critical[clueNum])) continue;
 
-                    player.AcquireClue(critical[clueNum]);
+                    context.Player.AcquireClue(critical[clueNum]);
                 }
                 //나머지 최소 60%확률로 일반 증거 획득
                 else
                 {
                     clueNum = random.Next(0, minor.Count);
-                    if (player.Clues.Contains(minor[clueNum])) continue;
+                    if (context.Player.Clues.Contains(minor[clueNum])) continue;
 
-                    player.AcquireClue(minor[clueNum]);
+                    context.Player.AcquireClue(minor[clueNum]);
                 }
             }
 
-            player.Hp--;
-            player.TurnCount++;
+            context.Player.Hp--;
+            context.Player.TurnCount++;
         }
         //===================================
         // 함수 - 운동
-        public static void Exercise(Player player)
+        public static void Exercise(GameContext context)
         {
             // 운동 2번 =  hp +1
 
             //체력이 1이하면 애초에 선택하지 못하게 해두도록 수정
-            if (player.Hp >= 1)
+            if (context.Player.Hp >= 1)
             {
-                player.Hp--;
-                player.TurnCount++;
-                Console.WriteLine("운동을 하고 상쾌해집니다!");
-                player.MaxHp += 0.5f;
+                context.Player.Hp--;
+                context.Player.TurnCount++;
+                context.AddLog("운동을 하고 상쾌해집니다! 체력 증가!");
+                context.Player.MaxHp += 0.5f;
 
             }
             else
             {
-                Console.WriteLine("체력이 부족합니다.");
+                context.AddLog("체력이 부족합니다.");
             }
         }
 
@@ -229,6 +281,22 @@ namespace _Project_Text_Detective
             player.RaiseStat(stats[num]);
         }
         //===================================
+        // 다이어리 메뉴(뒤로가기용)
+        public static void DiaryOptions(Player player)
+        {
+            int lineWidth = 30;
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"  ▶ 선택");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine(new string('─', lineWidth));
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.Write($" 0)");
+            Console.ResetColor();
+            Console.WriteLine($" 뒤로가기");
+        }
+
+        //===================================
         // 보기 메뉴 출력
         public static void ShowOptions(Player player)
         {
@@ -243,7 +311,10 @@ namespace _Project_Text_Detective
 
             for (int i = 0; i < behaviors.Count; i++)
             {
-                Console.WriteLine($"[{i + 1}] {GameRules.BehaveKor[(int)behaviors[i]]}");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.Write($" {i+1})");
+                Console.ResetColor();
+                Console.WriteLine($" {GameRules.BehaveKor[(int)behaviors[i]]}");
             }
         }
         //===================================
@@ -252,6 +323,7 @@ namespace _Project_Text_Detective
         {
             List<Behavior> newBehaviors = new List<Behavior>(GameRules.locaToBehave[player.Location]);
 
+            // 증거 80% 수집 시 "추리하기" 행동 추가
             bool has80percent = (float)player.Clues.Count / ClueData.Tutoclues.Count >= 0.8;
             bool isAtCafe = (player.Location == Location.Cafe);
             if (has80percent && isAtCafe)

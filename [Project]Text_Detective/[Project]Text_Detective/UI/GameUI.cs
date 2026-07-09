@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Threading.Channels;
 
 namespace _Project_Text_Detective
 {
@@ -18,10 +19,8 @@ namespace _Project_Text_Detective
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine(GetCentered(lineWidth,title));
+            Console.WriteLine(GetCentered(lineWidth, title));
             Console.ResetColor();
-
-            
 
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine(new string('─', lineWidth));
@@ -40,7 +39,7 @@ namespace _Project_Text_Detective
 
         //===================================
         // 정수 입력값 받기
-        public static int GetIntInput(int min, int max)
+        public static int GetIntInput(GameContext context, int min, int max)
         {
             while (true)
             {
@@ -49,7 +48,7 @@ namespace _Project_Text_Detective
                     if (input >= min && input <= max)
                     { return input; }
                 }
-                Console.WriteLine("\n잘못 입력했습니다. 보기 내 숫자만 입력가능");
+                context.AddLog("\n잘못 입력했습니다. 보기 내 숫자만 입력가능");
             }
         }
 
@@ -65,20 +64,23 @@ namespace _Project_Text_Detective
             Console.WriteLine(new string('─', lineWidth));
             Console.ResetColor();
 
-            for (int i = 0; i <= Math.Min(player.Clues.Count, (int)player.DeductAbility); i++)
+            if (player.Clues.Count == 0)
             {
-                if(player.Clues.Count == 0)
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.WriteLine("비어있음");
-                    Console.ResetColor();
-                    break;
-                }
-                if (player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
-                    Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}          ★중요");
-                else Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine(" ( 비어있음 ) ");
+                Console.ResetColor();
+            }
+            else
+            {
 
-                Console.WriteLine($" - {player.Clues[i].Description}");
+                for (int i = 0; i < Math.Min(player.Clues.Count, (int)player.DeductAbility); i++)
+                {
+                    if (player.JudegeAbility >= 10 && player.Clues[i].Importance == ClueImportance.Critical)
+                        Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}          ★중요");
+                    else Console.WriteLine($"증거[{i + 1}] {player.Clues[i].Name}");
+
+                    Console.WriteLine($" - {player.Clues[i].Description}");
+                }
             }
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine(new string('─', lineWidth));
@@ -97,7 +99,7 @@ namespace _Project_Text_Detective
             Console.WriteLine(new string('─', lineWidth));
             Console.ResetColor();
 
-            Console.WriteLine($"체력: {player.Hp}/{(int)player.MaxHp}      턴: {player.TurnCount}         Day: {player.Day}        현위치: {GameRules.LocationKor[(int)player.Location]}" +
+            Console.WriteLine($"체력: {player.Hp}/{(int)player.MaxHp}      턴: {player.TurnCount}       현위치: {GameRules.LocationKor[(int)player.Location]}" +
                 $"\n관찰력:{player.ObserveAbility}     판단력: {player.JudegeAbility}     추리력: {player.DeductAbility}");
             Console.WriteLine();
         }
@@ -114,8 +116,18 @@ namespace _Project_Text_Detective
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine(GetCentered(lineWidth,title));
+            Console.WriteLine(GetCentered(lineWidth, title));
             Console.ResetColor();
+
+            if (player.Clues.Count == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine(" ( 비어있음 ) ");
+                Console.ResetColor();
+            }
+
+            else
+            {
 
             for (int i = 0; i < player.Clues.Count; i++)
             {
@@ -125,6 +137,9 @@ namespace _Project_Text_Detective
 
                 Console.WriteLine($" - {player.Clues[i].Description}");
             }
+            
+            }
+            Console.WriteLine();
 
         }
         //===================================
@@ -133,7 +148,9 @@ namespace _Project_Text_Detective
         {
             int lineWidth = 30;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"  ▶ 시스템 창");
+            Console.Write($"  ▶ 시스템 창   ");
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"[Day {GameRules.Day}]");
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine(new string('─', lineWidth));
             Console.ResetColor();

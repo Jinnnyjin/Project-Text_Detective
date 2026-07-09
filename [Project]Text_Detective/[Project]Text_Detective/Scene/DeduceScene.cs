@@ -23,14 +23,14 @@ namespace _Project_Text_Detective
 
         public override void HandleInput(GameContext context)
         {
-            StartDeduce(context.Player);
+            StartDeduce(context);
             //다시 메인으로 복귀
             GoTo(context, SceneKey.MainScene);
         }
 
         //===================================
         // 함수 - 추리
-        public static void StartDeduce(Player player)
+        public static void StartDeduce(GameContext context)
         {
             // 캐릭터 중 용의자 추리기 ( 피해자 1명 빼기 )
             List<Character> suspects = new List<Character>();
@@ -47,16 +47,16 @@ namespace _Project_Text_Detective
                 Console.WriteLine($"[{i + 1}] {suspects[i].Name}");
             }
 
-            int choice = GameUI.GetIntInput(1, suspects.Count);
+            int choice = GameUI.GetIntInput(context,1, suspects.Count);
 
             // 범인 선택 시 추리 시작
-            if (suspects[choice - 1].Type == CharacterType.Criminal) Deduce(player);
+            if (suspects[choice - 1].Type == CharacterType.Criminal) Deduce(context);
             // 범인 선택 실패
-            else FailCatch("범인", player);
+            else FailCatch("범인", context.Player);
         }
         //===================================
         // 함수 - 용의자 검거 성공 시 추리
-        public static void Deduce(Player player)
+        public static void Deduce(GameContext context)
         {
             Random random = new Random();
             List<Debate> debate = new List<Debate>();
@@ -73,17 +73,17 @@ namespace _Project_Text_Detective
             for (int i = 0; i < debate.Count; i++)
             {
                 Console.WriteLine(debate[i].Statement);
-                GameUI.OpenDiary(player);
+                GameUI.OpenDiary(context.Player);
                 Console.WriteLine("해당 진술에 대해 반박할 만한 증거를 선택하세요");
-                int choice = GameUI.GetIntInput(1, player.Clues.Count);
+                int choice = GameUI.GetIntInput(context,1, context.Player.Clues.Count);
 
-                if (player.Clues[choice - 1] == debate[i].RightClue)
+                if (context.Player.Clues[choice - 1] == debate[i].RightClue)
                 {
                     Console.WriteLine("제대로 반박한것 같다.");
                 }
                 else
                 {
-                    FailCatch("알맞은 반박", player);
+                    FailCatch("알맞은 반박", context.Player);
                     return;
                 }
             }
@@ -102,7 +102,7 @@ namespace _Project_Text_Detective
 
             for (int i = 0; i < criticalClues.Count; i++)
             {
-                if (!player.Clues.Contains(criticalClues[i]))
+                if (!context.Player.Clues.Contains(criticalClues[i]))
                 {
                     Console.WriteLine("중요한 증거를 아직 다 못 찾은 듯 하다.. 조금만 더 둘러보자");
                     Console.WriteLine("아무키나 누르세요");
